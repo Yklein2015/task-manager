@@ -8,16 +8,19 @@ const scheduler = require('./scheduler');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const path = require('path');
 
 // Security middleware
 app.use(helmet());
 
 // CORS configuration
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://*.up.railway.app'],
   credentials: true
 }));
 
+// Serve static frontend files in production
+app.use(express.static(path.join(__dirname, '../frontend/build')));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
@@ -60,7 +63,11 @@ async function startServer() {
   try {
     await initializeDatabase();
     
-    app.listen(PORT, () => {
+   // Serve React app for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+}); 
+app.listen(PORT, () => {
       console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
