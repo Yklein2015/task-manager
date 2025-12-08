@@ -7,8 +7,9 @@ import Dashboard from './pages/Dashboard';
 import TaskList from './pages/TaskList';
 import Settings from './pages/Settings';
 
-const API_URL = 'http://localhost:3001/api';
-
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3001/api' 
+  : '/api';
 const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' }
